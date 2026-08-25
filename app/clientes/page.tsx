@@ -247,7 +247,7 @@ async function guardarEdicion() {
           </td>
 
           <td className="p-4 text-center">
-            <Link href={`/clientes/${cliente.id}/vehiculos`}>
+            <Link href={`/vehiculos?cliente=${cliente.id}`}>
             <Button className="bg-green-600 hover:bg-green-700 text-white">
               🚗 Ver vehículos
               </Button>

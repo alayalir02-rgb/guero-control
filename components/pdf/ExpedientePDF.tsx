@@ -167,6 +167,8 @@ type Vehiculo = {
   modelo: string;
   anio: string;
   placas: string;
+  numero_serie: string | null;
+  color: string | null;
   kilometraje: number;
 
   clientes: {
@@ -178,18 +180,21 @@ type Vehiculo = {
 
 type Props = {
   vehiculo: Vehiculo;
-  conceptos: Concepto[];
-  subtotal: number;
-  iva: number;
-  total: number;
+   historial: any [];
+  conceptos?: Concepto[];
+  subtotal?: number;
+  iva?: number;
+  total?: number;
 };
 
 export default function CotizacionPDF({
   vehiculo,
-  conceptos,
-  subtotal,
-  iva,
-  total,
+  historial,
+  conceptos = [],
+  subtotal = 0,
+  iva = 0,
+  total = 0,
+
 }: Props) {
 
     const fecha = new Date().toLocaleDateString("es-MX");

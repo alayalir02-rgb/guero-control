@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { PDFDownloadLink } from "@react-pdf/renderer";
 import CotizacionPDF from "@/components/pdf/CotizacionPDF";
@@ -27,12 +26,9 @@ type Concepto = {
     precio: number;
 };
 
-export default function Cotizaciones() {
-
-  const searchParams = useSearchParams();
-
-  const vehiculoId = searchParams.get("vehiculo");
-
+function Cotizaciones() {
+  const [vehiculoId, setVehiculoId] = useState<string | null>(null);
+  
   const [vehiculo, setVehiculo] = useState<Vehiculo | null>(null);
 
   const [fecha, setFecha] = useState("");
@@ -48,15 +44,19 @@ export default function Cotizaciones() {
 
   useEffect(() => {
 
-    if (vehiculoId) {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("vehiculo");
 
-      cargarVehiculo();
+    setVehiculoId(id);
 
+    if (id) {
+      cargarVehiculo(id);
     }
+  }, []);
 
-  }, [vehiculoId]);
 
-  async function cargarVehiculo() {
+  
+  async function cargarVehiculo(id: string) {
 
   const { data, error } = await supabase
 
@@ -71,7 +71,7 @@ export default function Cotizaciones() {
       )
     `)
 
-    .eq("id", vehiculoId)
+    .eq("id", id)
 
     .single();
 
@@ -452,4 +452,7 @@ async function guardarCotizacion() {
 
   );
 
+}
+export default function Page (){
+  return <Cotizaciones />
 }

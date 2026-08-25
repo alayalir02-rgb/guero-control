@@ -24,9 +24,11 @@ export default function Recordatorios() {
   }, []);
 
   async function cargarRecordatorios() {
+    const hoy = new Date().toISOString().split("T")[0];
     const { data, error } = await supabase
       .from("vw_recordatorios")
       .select("*")
+      .lte("proxima_fecha", hoy)
       .order("proxima_fecha", { ascending: true });
 
     if (error) {

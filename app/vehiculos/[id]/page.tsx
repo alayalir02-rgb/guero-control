@@ -16,6 +16,7 @@ type Vehiculo = {
   numero_serie: string | null;
   kilometraje: number;
 
+
   clientes: {
     nombre: string;
     telefono: string;
@@ -146,6 +147,7 @@ export default function ExpedienteVehiculo() {
     document={
       <ExpedientePDF
         vehiculo={{
+          id: vehiculo.id,
           marca: vehiculo.marca,
           modelo: vehiculo.modelo,
           anio: vehiculo.anio,
@@ -153,12 +155,13 @@ export default function ExpedienteVehiculo() {
           numero_serie: vehiculo.numero_serie,
           color: vehiculo.color,
           kilometraje: vehiculo.kilometraje,
+          clientes: {
+            nombre: vehiculo.clientes.nombre,
+            telefono: vehiculo.clientes.telefono,
+            sucursal: vehiculo.clientes.sucursal,
+          }
         }}
-        cliente={{
-          nombre: vehiculo.clientes.nombre,
-          telefono: vehiculo.clientes.telefono,
-          sucursal: vehiculo.clientes.sucursal,
-        }}
+        
         historial={historial}
       />
     }

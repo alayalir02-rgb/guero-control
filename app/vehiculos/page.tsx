@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
@@ -22,7 +22,7 @@ type Vehiculo = {
   kilometraje: number;
 };
 
-export default function Vehiculos() {
+function Vehiculos() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
 
@@ -390,4 +390,12 @@ export default function Vehiculos() {
 </main>
 
 );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <Vehiculos />
+    </Suspense>
+  );
 }
