@@ -3,6 +3,7 @@ import {
   Page,
   Text,
   View,
+  Image,
   StyleSheet,
 } from "@react-pdf/renderer";
 
@@ -100,10 +101,28 @@ type Vehiculo = {
 type Servicio = {
   id: number;
   fecha: string;
+  proxima_fecha: string | null;
+
   categoria: string | null;
   servicio: string | null;
+
   kilometraje_actual: number | null;
   kilometraje_proximo: number | null;
+
+  aceite: string | null;
+  viscosidad: string | null;
+  bujias: string | null;
+  cambio_bujias: string | null;
+
+  tipo_anticongelante: string | null;
+  accion_anticongelante: string | null;
+
+  tipo_transmision: string | null;
+  aceite_transmision: string | null;
+
+  servicio_frenos: string | null;
+  ubicacion_frenos: string | null;
+
   notas: string | null;
 };
 
@@ -141,24 +160,31 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
 
+  logoImage: {
+    width: 65,
+    height: 65,
+    objectFit: "contain",
+    marginRight: 12,
+  },
+
   companyBlock: {
     flex: 1,
   },
 
   companyName: {
     color: "#FFFFFF",
-    fontSize: 19,
+    fontSize: 18,
     fontWeight: "bold",
   },
 
   subtitle: {
     color: "#DDDDDD",
-    fontSize: 8.5,
+    fontSize: 8,
     marginTop: 4,
   },
 
   documentBlock: {
-    width: 150,
+    width: 120,
     alignItems: "flex-end",
   },
 
@@ -177,7 +203,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     backgroundColor: "#E31B23",
-    marginTop: 14,
+    marginTop: 12,
     marginBottom: 9,
   },
 
@@ -194,7 +220,7 @@ const styles = StyleSheet.create({
     lineHeight: 1.4,
   },
 
-  /* ================= TITULOS ================= */
+  /* ================= SECCIONES ================= */
 
   section: {
     marginBottom: 14,
@@ -220,7 +246,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
   },
 
-  /* ================= DATOS ================= */
+  /* ================= DATOS CLIENTE ================= */
 
   row: {
     flexDirection: "row",
@@ -241,6 +267,8 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "#222222",
   },
+
+  /* ================= VEHICULO ================= */
 
   vehicleGrid: {
     flexDirection: "row",
@@ -275,14 +303,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#DDDDDD",
     borderRadius: 5,
-    marginBottom: 9,
-    padding: 9,
+    marginBottom: 10,
+    padding: 10,
   },
 
   historyTop: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 7,
+    marginBottom: 8,
     paddingBottom: 6,
     borderBottomWidth: 1,
     borderBottomColor: "#EEEEEE",
@@ -306,26 +334,59 @@ const styles = StyleSheet.create({
   },
 
   historyLabel: {
-    width: 100,
+    width: 115,
     fontWeight: "bold",
     color: "#555555",
   },
 
   historyValue: {
     flex: 1,
+    color: "#222222",
+  },
+
+  detailTitle: {
+    color: "#E31B23",
+    fontWeight: "bold",
+    fontSize: 8.5,
+    marginTop: 5,
+    marginBottom: 6,
+  },
+
+  detailBox: {
+    backgroundColor: "#F7F7F7",
+    borderRadius: 4,
+    padding: 8,
+    marginTop: 3,
+    marginBottom: 5,
+  },
+
+  detailRow: {
+    flexDirection: "row",
+    marginBottom: 5,
+  },
+
+  detailLabel: {
+    width: 125,
+    color: "#555555",
+    fontWeight: "bold",
+  },
+
+  detailValue: {
+    flex: 1,
+    color: "#222222",
   },
 
   notesBox: {
-    marginTop: 5,
+    marginTop: 7,
     backgroundColor: "#F7F7F7",
-    padding: 7,
+    padding: 8,
     borderRadius: 4,
   },
 
   notesLabel: {
     fontWeight: "bold",
-    color: "#555555",
-    marginBottom: 3,
+    color: "#E31B23",
+    marginBottom: 4,
   },
 
   notesText: {
@@ -360,11 +421,11 @@ const styles = StyleSheet.create({
 });
 
 /* =========================================================
-   FORMATO DE FECHA
+   FUNCIONES
 ========================================================= */
 
-function formatearFecha(fecha: string) {
-  if (!fecha) return "Sin fecha";
+function formatearFecha(fecha: string | null | undefined) {
+  if (!fecha) return "—";
 
   const fechaLocal = new Date(`${fecha}T00:00:00`);
 
@@ -379,11 +440,9 @@ function formatearFecha(fecha: string) {
   });
 }
 
-/* =========================================================
-   FORMATO DE KILOMETRAJE
-========================================================= */
-
-function formatearKm(valor: number | null | undefined) {
+function formatearKm(
+  valor: number | null | undefined
+) {
   if (
     valor === null ||
     valor === undefined ||
@@ -415,26 +474,50 @@ export default function ExpedientePDF({
 
   return (
     <Document>
-      <Page size="LETTER" style={styles.page} wrap>
+
+      <Page
+        size="LETTER"
+        style={styles.page}
+        wrap
+      >
 
         {/* =================================================
             ENCABEZADO
         ================================================= */}
 
         <View style={styles.header}>
+
           <View style={styles.headerTop}>
 
-            <View style={styles.companyBlock}>
-              <Text style={styles.companyName}>
-                AUTOMOTRIZ EL GÜERO
-              </Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                flex: 1,
+              }}
+            >
 
-              <Text style={styles.subtitle}>
-                Servicio, mantenimiento y cuidado para tu vehículo
-              </Text>
+              <Image
+                src="/logo.png"
+                style={styles.logoImage}
+              />
+
+              <View style={styles.companyBlock}>
+
+                <Text style={styles.companyName}>
+                  AUTOMOTRIZ EL GÜERO
+                </Text>
+
+                <Text style={styles.subtitle}>
+                  Servicio, mantenimiento y cuidado para tu vehículo
+                </Text>
+
+              </View>
+
             </View>
 
             <View style={styles.documentBlock}>
+
               <Text style={styles.documentTitle}>
                 EXPEDIENTE
               </Text>
@@ -442,6 +525,7 @@ export default function ExpedientePDF({
               <Text style={styles.documentDate}>
                 Fecha: {fecha}
               </Text>
+
             </View>
 
           </View>
@@ -459,13 +543,16 @@ export default function ExpedientePDF({
           <Text style={styles.branchInfo}>
             Tel. {sucursal.telefono}
           </Text>
+
         </View>
+
 
         {/* =================================================
             DATOS DEL CLIENTE
         ================================================= */}
 
         <View style={styles.section}>
+
           <Text style={styles.sectionTitle}>
             DATOS DEL CLIENTE
           </Text>
@@ -473,6 +560,7 @@ export default function ExpedientePDF({
           <View style={styles.sectionBody}>
 
             <View style={styles.row}>
+
               <Text style={styles.label}>
                 Nombre:
               </Text>
@@ -480,9 +568,11 @@ export default function ExpedientePDF({
               <Text style={styles.value}>
                 {vehiculo.clientes.nombre}
               </Text>
+
             </View>
 
             <View style={styles.rowLast}>
+
               <Text style={styles.label}>
                 Teléfono:
               </Text>
@@ -490,16 +580,20 @@ export default function ExpedientePDF({
               <Text style={styles.value}>
                 {vehiculo.clientes.telefono || "No registrado"}
               </Text>
+
             </View>
 
           </View>
+
         </View>
 
+
         {/* =================================================
-            DATOS DEL VEHÍCULO
+            INFORMACIÓN DEL VEHÍCULO
         ================================================= */}
 
         <View style={styles.section}>
+
           <Text style={styles.sectionTitle}>
             INFORMACIÓN DEL VEHÍCULO
           </Text>
@@ -571,6 +665,7 @@ export default function ExpedientePDF({
             </View>
 
             <View style={styles.rowLast}>
+
               <Text style={styles.label}>
                 Número de serie:
               </Text>
@@ -578,16 +673,20 @@ export default function ExpedientePDF({
               <Text style={styles.value}>
                 {vehiculo.numero_serie || "No registrado"}
               </Text>
+
             </View>
 
           </View>
+
         </View>
 
+
         {/* =================================================
-            HISTORIAL
+            HISTORIAL DE SERVICIOS
         ================================================= */}
 
         <View style={styles.section}>
+
           <Text style={styles.sectionTitle}>
             HISTORIAL DE SERVICIOS
           </Text>
@@ -595,17 +694,21 @@ export default function ExpedientePDF({
           <View style={styles.sectionBody}>
 
             {historial.length === 0 ? (
+
               <Text style={styles.historyEmpty}>
                 Este vehículo todavía no tiene servicios registrados.
               </Text>
+
             ) : (
+
               historial.map((servicio, index) => (
 
                 <View
                   key={servicio.id ?? index}
                   style={styles.historyCard}
-                  wrap={false}
                 >
+
+                  {/* FECHA Y CATEGORÍA */}
 
                   <View style={styles.historyTop}>
 
@@ -619,65 +722,303 @@ export default function ExpedientePDF({
 
                   </View>
 
+
+                  {/* SERVICIO PRINCIPAL */}
+
                   <View style={styles.historyRow}>
+
                     <Text style={styles.historyLabel}>
-                      Servicio:
+                      Servicio realizado:
                     </Text>
 
                     <Text style={styles.historyValue}>
                       {servicio.servicio || "—"}
                     </Text>
+
                   </View>
 
-                  <View style={styles.historyRow}>
-                    <Text style={styles.historyLabel}>
-                      Kilometraje actual:
-                    </Text>
 
-                    <Text style={styles.historyValue}>
-                      {formatearKm(
-                        servicio.kilometraje_actual
-                      )}
-                    </Text>
+                  {/* DATOS ESPECÍFICOS */}
+
+                  {servicio.categoria === "Motor" && (
+
+                    <View style={styles.detailBox}>
+
+                      <Text style={styles.detailTitle}>
+                        DATOS DEL SERVICIO DE MOTOR
+                      </Text>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Aceite utilizado:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.aceite || "—"}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Viscosidad:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.viscosidad || "—"}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Tipo de bujía:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.bujias || "—"}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Cambio de bujías:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.cambio_bujias || "—"}
+                        </Text>
+                      </View>
+
+                    </View>
+
+                  )}
+
+
+                  {servicio.categoria === "Transmision" && (
+
+                    <View style={styles.detailBox}>
+
+                      <Text style={styles.detailTitle}>
+                        DATOS DE TRANSMISIÓN
+                      </Text>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Tipo de transmisión:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.tipo_transmision || "—"}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Aceite de transmisión:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.aceite_transmision || "—"}
+                        </Text>
+                      </View>
+
+                    </View>
+
+                  )}
+
+
+                  {servicio.categoria === "Anticongelante" && (
+
+                    <View style={styles.detailBox}>
+
+                      <Text style={styles.detailTitle}>
+                        DATOS DEL ANTICONGELANTE
+                      </Text>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Acción:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.accion_anticongelante || "—"}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Marca:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.tipo_anticongelante || "—"}
+                        </Text>
+                      </View>
+
+                    </View>
+
+                  )}
+
+
+                  {servicio.categoria === "Frenos" && (
+
+                    <View style={styles.detailBox}>
+
+                      <Text style={styles.detailTitle}>
+                        DATOS DE FRENOS
+                      </Text>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Servicio de frenos:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.servicio_frenos || "—"}
+                        </Text>
+                      </View>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Ubicación:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.ubicacion_frenos || "—"}
+                        </Text>
+                      </View>
+
+                    </View>
+
+                  )}
+
+
+                  {servicio.categoria === "Aire acondicionado" && (
+
+                    <View style={styles.detailBox}>
+
+                      <Text style={styles.detailTitle}>
+                        DATOS DE AIRE ACONDICIONADO
+                      </Text>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Servicio:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.servicio || "—"}
+                        </Text>
+                      </View>
+
+                    </View>
+
+                  )}
+
+
+                  {servicio.categoria === "Otros" && (
+
+                    <View style={styles.detailBox}>
+
+                      <Text style={styles.detailTitle}>
+                        OTROS SERVICIOS
+                      </Text>
+
+                      <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>
+                          Servicio:
+                        </Text>
+
+                        <Text style={styles.detailValue}>
+                          {servicio.servicio || "—"}
+                        </Text>
+                      </View>
+
+                    </View>
+
+                  )}
+
+
+                  {/* KILOMETRAJES */}
+
+                  <View style={styles.detailBox}>
+
+                    <View style={styles.detailRow}>
+
+                      <Text style={styles.detailLabel}>
+                        Kilometraje actual:
+                      </Text>
+
+                      <Text style={styles.detailValue}>
+                        {formatearKm(
+                          servicio.kilometraje_actual
+                        )}
+                      </Text>
+
+                    </View>
+
+                    <View style={styles.detailRow}>
+
+                      <Text style={styles.detailLabel}>
+                        Próximo servicio:
+                      </Text>
+
+                      <Text style={styles.detailValue}>
+                        {formatearKm(
+                          servicio.kilometraje_proximo
+                        )}
+                      </Text>
+
+                    </View>
+
+                    <View style={styles.detailRow}>
+
+                      <Text style={styles.detailLabel}>
+                        Próxima fecha:
+                      </Text>
+
+                      <Text style={styles.detailValue}>
+                        {formatearFecha(
+                          servicio.proxima_fecha
+                        )}
+                      </Text>
+
+                    </View>
+
                   </View>
 
-                  <View style={styles.historyRow}>
-                    <Text style={styles.historyLabel}>
-                      Próximo servicio:
-                    </Text>
 
-                    <Text style={styles.historyValue}>
-                      {formatearKm(
-                        servicio.kilometraje_proximo
-                      )}
-                    </Text>
-                  </View>
+                  {/* NOTAS */}
 
                   {servicio.notas &&
                     servicio.notas.trim() !== "" && (
-                      <View style={styles.notesBox}>
 
-                        <Text style={styles.notesLabel}>
-                          Notas:
-                        </Text>
+                    <View style={styles.notesBox}>
 
-                        <Text style={styles.notesText}>
-                          {servicio.notas}
-                        </Text>
+                      <Text style={styles.notesLabel}>
+                        NOTAS
+                      </Text>
 
-                      </View>
-                    )}
+                      <Text style={styles.notesText}>
+                        {servicio.notas}
+                      </Text>
+
+                    </View>
+
+                  )}
 
                 </View>
 
               ))
+
             )}
 
           </View>
+
         </View>
 
+
         {/* =================================================
-            PIE
+            FOOTER
         ================================================= */}
 
         <View style={styles.footer} fixed>
@@ -693,6 +1034,7 @@ export default function ExpedientePDF({
         </View>
 
       </Page>
+
     </Document>
   );
 }
