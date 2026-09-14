@@ -37,6 +37,16 @@ function Vehiculos() {
   const [kilometraje, setKilometraje] = useState("");
 
   const [busqueda, setBusqueda] = useState("");
+  const [editando, setEditando] = useState<Vehiculo | null>(null);
+
+ const [clienteEditar, setClienteEditar] = useState("");
+ const [marcaEditar, setMarcaEditar] = useState("");
+ const [modeloEditar, setModeloEditar] = useState("");
+ const [anioEditar, setAnioEditar] = useState("");
+ const [colorEditar, setColorEditar] = useState("");
+ const [placasEditar, setPlacasEditar] = useState("");
+ const [numeroSerieEditar, setNumeroSerieEditar] = useState("");
+ const [kilometrajeEditar, setKilometrajeEditar] = useState("");
 
   const searchParams = useSearchParams ();
 
@@ -123,6 +133,75 @@ function Vehiculos() {
     cargarVehiculos();
   }
 
+  function abrirEditar(vehiculo: Vehiculo) {
+  setEditando(vehiculo);
+
+  setClienteEditar(String(vehiculo.cliente_id));
+  setMarcaEditar(vehiculo.marca);
+  setModeloEditar(vehiculo.modelo);
+  setAnioEditar(vehiculo.anio);
+  setColorEditar(vehiculo.color || "");
+  setPlacasEditar(vehiculo.placas);
+  setNumeroSerieEditar(vehiculo.numero_serie || "");
+  setKilometrajeEditar(String(vehiculo.kilometraje || ""));
+}
+
+async function guardarEdicion() {
+  if (!editando) return;
+
+  const { error } = await supabase
+    .from("vehiculos")
+    .update({
+      cliente_id: Number(clienteEditar),
+      marca: marcaEditar,
+      modelo: modeloEditar,
+      anio: anioEditar,
+      color: colorEditar || null,
+      placas: placasEditar,
+      numero_serie: numeroSerieEditar || null,
+      kilometraje: kilometrajeEditar
+        ? Number(kilometrajeEditar)
+        : 0,
+    })
+    .eq("id", editando.id);
+
+  if (error) {
+    alert("Error al actualizar vehículo: " + error.message);
+    return;
+  }
+
+  alert("Vehículo actualizado correctamente");
+
+  setEditando(null);
+  cargarVehiculos();
+}
+
+async function eliminarVehiculo(id: number) {
+  const confirmar = window.confirm(
+    "¿Estás seguro de eliminar este vehículo?\n\nEsta acción puede afectar su historial y cotizaciones."
+  );
+
+  if (!confirmar) return;
+
+  const { error } = await supabase
+    .from("vehiculos")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert(
+      "No se pudo eliminar el vehículo.\n\n" +
+      "Es posible que tenga historial, servicios o cotizaciones relacionados.\n\n" +
+      error.message
+    );
+    return;
+  }
+
+  alert("Vehículo eliminado correctamente");
+
+  cargarVehiculos();
+}
+
   const vehiculosFiltrados = vehiculos.filter((vehiculo) => {
     const texto = busqueda.toLowerCase();
 
@@ -138,6 +217,167 @@ function Vehiculos() {
 
   return (
     <main className="max-w-7xl mx-auto p-6">
+      {editando && (
+  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+
+      <h2 className="text-2xl font-bold mb-6">
+        ✏️ Editar vehículo
+      </h2>
+
+      <div className="grid md:grid-cols-2 gap-4">
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Cliente
+          </label>
+
+          <select
+            value={clienteEditar}
+            onChange={(e) => setClienteEditar(e.target.value)}
+            className="w-full border rounded-xl p-3"
+          >
+            <option value="">
+              Selecciona un cliente
+            </option>
+
+            {clientes.map((cliente) => (
+              <option
+                key={cliente.id}
+                value={cliente.id}
+              >
+                {cliente.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Marca
+          </label>
+
+          <input
+            value={marcaEditar}
+            onChange={(e) =>
+              setMarcaEditar(e.target.value.toUpperCase())
+            }
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Modelo
+          </label>
+
+          <input
+            value={modeloEditar}
+            onChange={(e) =>
+              setModeloEditar(e.target.value.toUpperCase())
+            }
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Año
+          </label>
+
+          <input
+            type="number"
+            value={anioEditar}
+            onChange={(e) =>
+              setAnioEditar(e.target.value)
+            }
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Color
+          </label>
+
+          <input
+            value={colorEditar}
+            onChange={(e) =>
+              setColorEditar(e.target.value)
+            }
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Placas
+          </label>
+
+          <input
+            value={placasEditar}
+            onChange={(e) =>
+              setPlacasEditar(e.target.value.toUpperCase())
+            }
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Número de serie (VIN)
+          </label>
+
+          <input
+            value={numeroSerieEditar}
+            onChange={(e) =>
+              setNumeroSerieEditar(
+                e.target.value.toUpperCase()
+              )
+            }
+            maxLength={17}
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+        <div>
+          <label className="block mb-2 font-medium">
+            Kilometraje
+          </label>
+
+          <input
+            type="number"
+            value={kilometrajeEditar}
+            onChange={(e) =>
+              setKilometrajeEditar(e.target.value)
+            }
+            className="w-full border rounded-xl p-3"
+          />
+        </div>
+
+      </div>
+
+      <div className="flex justify-end gap-3 mt-6">
+
+        <button
+          onClick={() => setEditando(null)}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-5 py-3 rounded-xl"
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={guardarEdicion}
+          className="bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold"
+        >
+          Guardar cambios
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+)}
 
   <h1 className="text-4xl font-bold mb-8">
     🚗 Vehículos
@@ -350,33 +590,60 @@ function Vehiculos() {
 
           <td className="p-4">
 
-            <div className="flex gap-2 justify-center">
+  <div className="flex flex-wrap gap-2 justify-center items-center">
 
-  <Link
-    href={`/vehiculos/${vehiculo.id}`}
-    className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg"
-  >
-    👁️ Expediente
-  </Link>
+    {/* EDITAR */}
 
-  <Link
-    href={`/servicios?vehiculo=${vehiculo.id}`}
-    className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg"
-  >
-    🛠 Servicio
-  </Link>
+    <button
+      onClick={() => abrirEditar(vehiculo)}
+      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded-lg whitespace-nowrap"
+    >
+      ✏️ Editar
+    </button>
 
-  <Link
-    href={`/cotizaciones?vehiculo=${vehiculo.id}`}
-    className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg"
-  >
-    🧾 Cotizar
-  </Link>
 
-</div>
+    {/* ELIMINAR */}
 
-          </td>
+    <button
+      onClick={() => eliminarVehiculo(vehiculo.id)}
+      className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg whitespace-nowrap"
+    >
+      🗑️
+    </button>
 
+
+    {/* EXPEDIENTE */}
+
+    <Link
+      href={`/vehiculos/${vehiculo.id}`}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg whitespace-nowrap"
+    >
+      👁️ Expediente
+    </Link>
+
+
+    {/* SERVICIO */}
+
+    <Link
+      href={`/servicios?vehiculo=${vehiculo.id}`}
+      className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg whitespace-nowrap"
+    >
+      🛠 Servicio
+    </Link>
+
+
+    {/* COTIZAR */}
+
+    <Link
+      href={`/cotizaciones?vehiculo=${vehiculo.id}`}
+      className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-2 rounded-lg whitespace-nowrap"
+    >
+      🧾 Cotizar
+    </Link>
+
+  </div>
+
+</td>
         </tr>
 
       ))}

@@ -6,160 +6,79 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 
-const styles = StyleSheet.create({
-  page: {
-    padding: 35,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    color: "#222222",
+/* =========================================================
+   SUCURSALES
+========================================================= */
+
+const sucursales: Record<
+  string,
+  {
+    nombre: string;
+    direccion: string;
+    referencia: string;
+    telefono: string;
+  }
+> = {
+  "Mahatma Gandhi": {
+    nombre: "SUC. MATRIZ",
+    direccion: "Mahatma Gandhi #119-B",
+    referencia: "Frente a Chedraui",
+    telefono: "449 140 71 16",
   },
 
-  header: {
-    backgroundColor: "#111111",
-    padding: 22,
-    marginBottom: 25,
-    color: "#ffffff",
+  Matriz: {
+    nombre: "SUC. MATRIZ",
+    direccion: "Mahatma Gandhi #119-B",
+    referencia: "Frente a Chedraui",
+    telefono: "449 140 71 16",
   },
 
-  logo: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
+  Oriente: {
+    nombre: "SUC. ORIENTE",
+    direccion: "Av. Aguascalientes #101",
+    referencia: "A 1 cuadra de Barberena",
+    telefono: "449 975 04 74",
   },
 
-  subtitle: {
-    fontSize: 10,
-    textAlign: "center",
-    marginTop: 5,
-    color: "#dddddd",
+  "López Portillo": {
+    nombre: "SUC. ORIENTE",
+    direccion: "Av. Aguascalientes #101",
+    referencia: "A 1 cuadra de Barberena",
+    telefono: "449 975 04 74",
   },
 
-  headerInfo: {
-    marginTop: 12,
-    textAlign: "right",
-    fontSize: 8,
-    color: "#eeeeee",
+  "Segundo Anillo": {
+    nombre: "SUC. ORIENTE",
+    direccion: "Av. Aguascalientes #101",
+    referencia: "A 1 cuadra de Barberena",
+    telefono: "449 975 04 74",
   },
 
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#c8102e",
-    marginBottom: 12,
+  Agostaderito: {
+    nombre: "SUC. AGOSTADERITO",
+    direccion: "Av. Agostaderito #3965",
+    referencia: "Fte. a la Delegación",
+    telefono: "449 913 55 19",
   },
 
-  section: {
-    border: "1 solid #dddddd",
-    borderRadius: 6,
-    padding: 15,
-    marginBottom: 18,
+  "Villas del Pilar": {
+    nombre: "SUC. VILLAS DEL PILAR",
+    direccion: "Av. Siglo XXI #3165",
+    referencia: "Esq. Carlos López M.",
+    telefono: "449 250 57 33",
   },
 
-  row: {
-    flexDirection: "row",
-    marginBottom: 7,
+  "Tercer Anillo": {
+    nombre: "SUC. VILLAS DEL PILAR",
+    direccion: "Av. Siglo XXI #3165",
+    referencia: "Esq. Carlos López M.",
+    telefono: "449 250 57 33",
   },
-
-  label: {
-    width: "28%",
-    fontWeight: "bold",
-  },
-
-  value: {
-    width: "72%",
-  },
-
-  table: {
-    width: "100%",
-    marginTop: 8,
-  },
-
-  tableHeader: {
-    flexDirection: "row",
-    backgroundColor: "#111111",
-    color: "#ffffff",
-    padding: 8,
-  },
-
-  tableRow: {
-    flexDirection: "row",
-    borderBottom: "1 solid #dddddd",
-    padding: 8,
-  },
-
-  cantidad: {
-    width: "12%",
-    textAlign: "center",
-  },
-
-  descripcion: {
-    width: "58%",
-  },
-
-  precio: {
-    width: "15%",
-    textAlign: "right",
-  },
-
-  importe: {
-    width: "15%",
-    textAlign: "right",
-  },
-
-  totals: {
-    marginTop: 18,
-    marginLeft: "55%",
-    width: "45%",
-  },
-
-  totalRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 7,
-  },
-
-  totalFinal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    backgroundColor: "#c8102e",
-    color: "#ffffff",
-    padding: 10,
-    marginTop: 5,
-    fontSize: 13,
-    fontWeight: "bold",
-  },
-
-  notes: {
-    marginTop: 25,
-    border: "1 solid #dddddd",
-    padding: 12,
-    borderRadius: 6,
-  },
-
-  notesTitle: {
-    color: "#c8102e",
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-
-  footer: {
-    position: "absolute",
-    bottom: 25,
-    left: 35,
-    right: 35,
-    borderTop: "1 solid #dddddd",
-    paddingTop: 8,
-    textAlign: "center",
-    fontSize: 8,
-    color: "#777777",
-  },
-});
-
-type Concepto = {
-  descripcion: string;
-  cantidad: number;
-  precio: number;
 };
+
+/* =========================================================
+   TIPOS
+========================================================= */
 
 type Vehiculo = {
   id: number;
@@ -178,398 +97,602 @@ type Vehiculo = {
   };
 };
 
-type Props = {
-  vehiculo: Vehiculo;
-   historial: any [];
-  conceptos?: Concepto[];
-  subtotal?: number;
-  iva?: number;
-  total?: number;
+type Servicio = {
+  id: number;
+  fecha: string;
+  categoria: string | null;
+  servicio: string | null;
+  kilometraje_actual: number | null;
+  kilometraje_proximo: number | null;
+  notas: string | null;
 };
 
-export default function CotizacionPDF({
+type Props = {
+  vehiculo: Vehiculo;
+  historial: Servicio[];
+};
+
+/* =========================================================
+   ESTILOS
+========================================================= */
+
+const styles = StyleSheet.create({
+  page: {
+    paddingTop: 35,
+    paddingBottom: 55,
+    paddingHorizontal: 38,
+    fontFamily: "Helvetica",
+    fontSize: 9,
+    color: "#222222",
+  },
+
+  /* ================= HEADER ================= */
+
+  header: {
+    backgroundColor: "#111111",
+    padding: 18,
+    marginBottom: 20,
+    borderRadius: 7,
+  },
+
+  headerTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+
+  companyBlock: {
+    flex: 1,
+  },
+
+  companyName: {
+    color: "#FFFFFF",
+    fontSize: 19,
+    fontWeight: "bold",
+  },
+
+  subtitle: {
+    color: "#DDDDDD",
+    fontSize: 8.5,
+    marginTop: 4,
+  },
+
+  documentBlock: {
+    width: 150,
+    alignItems: "flex-end",
+  },
+
+  documentTitle: {
+    color: "#E31B23",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+
+  documentDate: {
+    color: "#DDDDDD",
+    fontSize: 8,
+    marginTop: 4,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#E31B23",
+    marginTop: 14,
+    marginBottom: 9,
+  },
+
+  branchName: {
+    color: "#E31B23",
+    fontSize: 9,
+    fontWeight: "bold",
+    marginBottom: 3,
+  },
+
+  branchInfo: {
+    color: "#FFFFFF",
+    fontSize: 8,
+    lineHeight: 1.4,
+  },
+
+  /* ================= TITULOS ================= */
+
+  section: {
+    marginBottom: 14,
+  },
+
+  sectionTitle: {
+    backgroundColor: "#111111",
+    color: "#FFFFFF",
+    fontSize: 9.5,
+    fontWeight: "bold",
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+  },
+
+  sectionBody: {
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+    borderTopWidth: 0,
+    padding: 11,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+
+  /* ================= DATOS ================= */
+
+  row: {
+    flexDirection: "row",
+    marginBottom: 6,
+  },
+
+  rowLast: {
+    flexDirection: "row",
+  },
+
+  label: {
+    width: 90,
+    fontWeight: "bold",
+    color: "#555555",
+  },
+
+  value: {
+    flex: 1,
+    color: "#222222",
+  },
+
+  vehicleGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+
+  vehicleItem: {
+    width: "50%",
+    flexDirection: "row",
+    marginBottom: 7,
+  },
+
+  vehicleLabel: {
+    width: 75,
+    fontWeight: "bold",
+    color: "#555555",
+  },
+
+  vehicleValue: {
+    flex: 1,
+  },
+
+  /* ================= HISTORIAL ================= */
+
+  historyEmpty: {
+    padding: 15,
+    textAlign: "center",
+    color: "#777777",
+  },
+
+  historyCard: {
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+    borderRadius: 5,
+    marginBottom: 9,
+    padding: 9,
+  },
+
+  historyTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 7,
+    paddingBottom: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: "#EEEEEE",
+  },
+
+  historyDate: {
+    color: "#E31B23",
+    fontWeight: "bold",
+    fontSize: 9,
+  },
+
+  historyCategory: {
+    color: "#555555",
+    fontWeight: "bold",
+    fontSize: 8,
+  },
+
+  historyRow: {
+    flexDirection: "row",
+    marginBottom: 5,
+  },
+
+  historyLabel: {
+    width: 100,
+    fontWeight: "bold",
+    color: "#555555",
+  },
+
+  historyValue: {
+    flex: 1,
+  },
+
+  notesBox: {
+    marginTop: 5,
+    backgroundColor: "#F7F7F7",
+    padding: 7,
+    borderRadius: 4,
+  },
+
+  notesLabel: {
+    fontWeight: "bold",
+    color: "#555555",
+    marginBottom: 3,
+  },
+
+  notesText: {
+    color: "#444444",
+    lineHeight: 1.4,
+  },
+
+  /* ================= FOOTER ================= */
+
+  footer: {
+    position: "absolute",
+    bottom: 20,
+    left: 38,
+    right: 38,
+    borderTopWidth: 1,
+    borderTopColor: "#DDDDDD",
+    paddingTop: 7,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  footerText: {
+    fontSize: 7,
+    color: "#777777",
+  },
+
+  footerBrand: {
+    fontSize: 7,
+    color: "#E31B23",
+    fontWeight: "bold",
+  },
+});
+
+/* =========================================================
+   FORMATO DE FECHA
+========================================================= */
+
+function formatearFecha(fecha: string) {
+  if (!fecha) return "Sin fecha";
+
+  const fechaLocal = new Date(`${fecha}T00:00:00`);
+
+  if (Number.isNaN(fechaLocal.getTime())) {
+    return fecha;
+  }
+
+  return fechaLocal.toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+/* =========================================================
+   FORMATO DE KILOMETRAJE
+========================================================= */
+
+function formatearKm(valor: number | null | undefined) {
+  if (
+    valor === null ||
+    valor === undefined ||
+    Number.isNaN(Number(valor))
+  ) {
+    return "—";
+  }
+
+  return `${Number(valor).toLocaleString("es-MX")} km`;
+}
+
+/* =========================================================
+   EXPEDIENTE PDF
+========================================================= */
+
+export default function ExpedientePDF({
   vehiculo,
   historial,
-  conceptos = [],
-  subtotal = 0,
-  iva = 0,
-  total = 0,
-
 }: Props) {
+  const fecha = new Date().toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
-    const fecha = new Date().toLocaleDateString("es-MX");
-    const folio = `COT-${vehiculo.id}-${Date.now()
-    .toString()
-    .slice(-5)}`;
+  const sucursal =
+    sucursales[vehiculo.clientes.sucursal] ||
+    sucursales["Oriente"];
 
   return (
     <Document>
+      <Page size="LETTER" style={styles.page} wrap>
 
-      <Page size="LETTER" style={styles.page}>
-
-        {/* ENCABEZADO */}
+        {/* =================================================
+            ENCABEZADO
+        ================================================= */}
 
         <View style={styles.header}>
+          <View style={styles.headerTop}>
 
-  <View
-    style={{
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "flex-start",
-    }}
-  >
-
-    {/* NOMBRE DE LA EMPRESA */}
-
-    <View>
-      <Text style={styles.logo}>
-        AUTOMOTRIZ EL GÜERO
-      </Text>
-
-      <Text style={styles.subtitle}>
-        COTIZACIÓN DE SERVICIO
-      </Text>
-    </View>
-
-
-    {/* FOLIO Y FECHA */}
-
-    <View
-      style={{
-        width: 150,
-        textAlign: "right",
-      }}
-    >
-
-      <Text
-        style={{
-          color: "#ffffff",
-          fontSize: 9,
-          fontWeight: "bold",
-        }}
-      >
-        FOLIO
-      </Text>
-
-      <Text
-        style={{
-          color: "#ffffff",
-          fontSize: 11,
-          marginTop: 3,
-        }}
-      >
-        {folio}
-      </Text>
-
-      <Text
-        style={{
-          color: "#dddddd",
-          fontSize: 9,
-          marginTop: 5,
-        }}
-      >
-        Fecha: {fecha}
-      </Text>
-
-    </View>
-
-  </View>
-
-
-  {/* DATOS DE CONTACTO */}
-
-  <View
-    style={{
-      marginTop: 15,
-      borderTop: "1 solid #555555",
-      paddingTop: 8,
-    }}
-  >
-
-    <Text
-      style={{
-        color: "#eeeeee",
-        fontSize: 8,
-        textAlign: "right",
-      }}
-    >
-      Av. Aguascalientes Ote. | Tel. 449 975 04 74
-    </Text>
-
-  </View>
-
-</View>
-
-        {/* DATOS DEL CLIENTE */}
-
-        <View style={styles.section}>
-
-          <Text style={styles.title}>
-            Datos del Cliente y Vehículo
-          </Text>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Nombre:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.clientes.nombre}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Teléfono:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.clientes.telefono}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Sucursal:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.clientes.sucursal}
-            </Text>
-          </View>
-
-        </View>
-
-
-        {/* DATOS DEL VEHÍCULO */}
-
-        <View style={styles.section}>
-
-          <Text style={styles.title}>
-            Información del Vehículo
-          </Text>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Vehículo:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.marca} {vehiculo.modelo}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Año:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.anio}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Placas:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.placas}
-            </Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>
-              Kilometraje:
-            </Text>
-
-            <Text style={styles.value}>
-              {vehiculo.kilometraje.toLocaleString("es-MX")} km
-            </Text>
-          </View>
-
-        </View>
-
-
-        {/* CONCEPTOS */}
-
-        <View style={styles.section}>
-
-          <Text style={styles.title}>
-            Conceptos de la Cotización
-          </Text>
-
-          <View style={styles.table}>
-
-            <View style={styles.tableHeader}>
-
-              <Text style={styles.cantidad}>
-                Cant.
+            <View style={styles.companyBlock}>
+              <Text style={styles.companyName}>
+                AUTOMOTRIZ EL GÜERO
               </Text>
 
-              <Text style={styles.descripcion}>
-                Descripción
+              <Text style={styles.subtitle}>
+                Servicio, mantenimiento y cuidado para tu vehículo
               </Text>
-
-              <Text style={styles.precio}>
-                Precio
-              </Text>
-
-              <Text style={styles.importe}>
-                Importe
-              </Text>
-
             </View>
 
+            <View style={styles.documentBlock}>
+              <Text style={styles.documentTitle}>
+                EXPEDIENTE
+              </Text>
 
-            {conceptos.map((concepto, index) => (
+              <Text style={styles.documentDate}>
+                Fecha: {fecha}
+              </Text>
+            </View>
 
-              <View
-                key={index}
-                style={styles.tableRow}
-              >
+          </View>
 
-                <Text style={styles.cantidad}>
-                  {concepto.cantidad}
+          <View style={styles.divider} />
+
+          <Text style={styles.branchName}>
+            {sucursal.nombre}
+          </Text>
+
+          <Text style={styles.branchInfo}>
+            {sucursal.direccion} · {sucursal.referencia}
+          </Text>
+
+          <Text style={styles.branchInfo}>
+            Tel. {sucursal.telefono}
+          </Text>
+        </View>
+
+        {/* =================================================
+            DATOS DEL CLIENTE
+        ================================================= */}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            DATOS DEL CLIENTE
+          </Text>
+
+          <View style={styles.sectionBody}>
+
+            <View style={styles.row}>
+              <Text style={styles.label}>
+                Nombre:
+              </Text>
+
+              <Text style={styles.value}>
+                {vehiculo.clientes.nombre}
+              </Text>
+            </View>
+
+            <View style={styles.rowLast}>
+              <Text style={styles.label}>
+                Teléfono:
+              </Text>
+
+              <Text style={styles.value}>
+                {vehiculo.clientes.telefono || "No registrado"}
+              </Text>
+            </View>
+
+          </View>
+        </View>
+
+        {/* =================================================
+            DATOS DEL VEHÍCULO
+        ================================================= */}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            INFORMACIÓN DEL VEHÍCULO
+          </Text>
+
+          <View style={styles.sectionBody}>
+
+            <View style={styles.vehicleGrid}>
+
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>
+                  Marca:
                 </Text>
 
-                <Text style={styles.descripcion}>
-                  {concepto.descripcion}
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.marca}
                 </Text>
-
-                <Text style={styles.precio}>
-                  $
-                  {concepto.precio.toLocaleString(
-                    "es-MX",
-                    {
-                      minimumFractionDigits: 2,
-                    }
-                  )}
-                </Text>
-
-                <Text style={styles.importe}>
-                  $
-                  {(
-                    concepto.cantidad *
-                    concepto.precio
-                  ).toLocaleString(
-                    "es-MX",
-                    {
-                      minimumFractionDigits: 2,
-                    }
-                  )}
-                </Text>
-
               </View>
 
-            ))}
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>
+                  Modelo:
+                </Text>
 
-          </View>
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.modelo}
+                </Text>
+              </View>
 
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>
+                  Año:
+                </Text>
 
-          {/* TOTALES */}
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.anio}
+                </Text>
+              </View>
 
-          <View style={styles.totals}>
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>
+                  Color:
+                </Text>
 
-            <View style={styles.totalRow}>
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.color || "No registrado"}
+                </Text>
+              </View>
 
-              <Text>
-                Subtotal:
-              </Text>
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>
+                  Placas:
+                </Text>
 
-              <Text>
-                $
-                {subtotal.toLocaleString(
-                  "es-MX",
-                  {
-                    minimumFractionDigits: 2,
-                  }
-                )}
-              </Text>
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.placas}
+                </Text>
+              </View>
+
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>
+                  Kilometraje:
+                </Text>
+
+                <Text style={styles.vehicleValue}>
+                  {formatearKm(vehiculo.kilometraje)}
+                </Text>
+              </View>
 
             </View>
 
-
-            <View style={styles.totalRow}>
-
-              <Text>
-                IVA:
+            <View style={styles.rowLast}>
+              <Text style={styles.label}>
+                Número de serie:
               </Text>
 
-              <Text>
-                $
-                {iva.toLocaleString(
-                  "es-MX",
-                  {
-                    minimumFractionDigits: 2,
-                  }
-                )}
+              <Text style={styles.value}>
+                {vehiculo.numero_serie || "No registrado"}
               </Text>
-
-            </View>
-
-
-            <View style={styles.totalFinal}>
-
-              <Text>
-                TOTAL
-              </Text>
-
-              <Text>
-                $
-                {total.toLocaleString(
-                  "es-MX",
-                  {
-                    minimumFractionDigits: 2,
-                  }
-                )}
-              </Text>
-
             </View>
 
           </View>
-
         </View>
 
+        {/* =================================================
+            HISTORIAL
+        ================================================= */}
 
-        {/* NOTAS */}
-
-        <View style={styles.notes}>
-
-          <Text style={styles.notesTitle}>
-            Observaciones
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            HISTORIAL DE SERVICIOS
           </Text>
 
-          <Text>
-            Esta cotización corresponde a los conceptos
-            y precios indicados anteriormente.
-          </Text>
+          <View style={styles.sectionBody}>
 
-          <Text style={{ marginTop: 5 }}>
-            Los precios pueden estar sujetos a cambios
-            de acuerdo con las condiciones del vehículo.
-          </Text>
+            {historial.length === 0 ? (
+              <Text style={styles.historyEmpty}>
+                Este vehículo todavía no tiene servicios registrados.
+              </Text>
+            ) : (
+              historial.map((servicio, index) => (
 
+                <View
+                  key={servicio.id ?? index}
+                  style={styles.historyCard}
+                  wrap={false}
+                >
+
+                  <View style={styles.historyTop}>
+
+                    <Text style={styles.historyDate}>
+                      {formatearFecha(servicio.fecha)}
+                    </Text>
+
+                    <Text style={styles.historyCategory}>
+                      {servicio.categoria || "SERVICIO"}
+                    </Text>
+
+                  </View>
+
+                  <View style={styles.historyRow}>
+                    <Text style={styles.historyLabel}>
+                      Servicio:
+                    </Text>
+
+                    <Text style={styles.historyValue}>
+                      {servicio.servicio || "—"}
+                    </Text>
+                  </View>
+
+                  <View style={styles.historyRow}>
+                    <Text style={styles.historyLabel}>
+                      Kilometraje actual:
+                    </Text>
+
+                    <Text style={styles.historyValue}>
+                      {formatearKm(
+                        servicio.kilometraje_actual
+                      )}
+                    </Text>
+                  </View>
+
+                  <View style={styles.historyRow}>
+                    <Text style={styles.historyLabel}>
+                      Próximo servicio:
+                    </Text>
+
+                    <Text style={styles.historyValue}>
+                      {formatearKm(
+                        servicio.kilometraje_proximo
+                      )}
+                    </Text>
+                  </View>
+
+                  {servicio.notas &&
+                    servicio.notas.trim() !== "" && (
+                      <View style={styles.notesBox}>
+
+                        <Text style={styles.notesLabel}>
+                          Notas:
+                        </Text>
+
+                        <Text style={styles.notesText}>
+                          {servicio.notas}
+                        </Text>
+
+                      </View>
+                    )}
+
+                </View>
+
+              ))
+            )}
+
+          </View>
         </View>
 
+        {/* =================================================
+            PIE
+        ================================================= */}
 
-        {/* PIE */}
+        <View style={styles.footer} fixed>
 
-        <View style={styles.footer}>
-
-          <Text>
-            Automotriz El Güero
+          <Text style={styles.footerText}>
+            Expediente del vehículo · Automotriz El Güero
           </Text>
 
-          <Text>
+          <Text style={styles.footerBrand}>
             Siéntete seguro, estás en Automotriz El Güero
           </Text>
 
         </View>
 
       </Page>
-
     </Document>
   );
 }

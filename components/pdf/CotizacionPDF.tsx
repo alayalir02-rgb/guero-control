@@ -20,222 +20,409 @@ type CotizacionPDFProps = {
     anio: string;
     placas: string;
     kilometraje: number;
-
     clientes: {
       nombre: string;
       telefono: string;
       sucursal: string;
     };
   };
-
   conceptos: Concepto[];
-
   subtotal: number;
   iva: number;
   total: number;
-
   notas: string;
 };
 
-const styles = StyleSheet.create({
+/* =========================================================
+   SUCURSALES
+========================================================= */
 
-  page: {
-    padding: 0,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    color: "#111111",
+const sucursales: Record<
+  string,
+  {
+    nombre: string;
+    direccion: string;
+    referencia: string;
+    telefono: string;
+  }
+> = {
+  "Mahatma Gandhi": {
+    nombre: "SUC. MATRIZ",
+    direccion: "Mahatma Gandhi #119-B",
+    referencia: "Frente a Chedraui",
+    telefono: "449 140 71 16",
   },
+
+  "Matriz": {
+    nombre: "SUC. MATRIZ",
+    direccion: "Mahatma Gandhi #119-B",
+    referencia: "Frente a Chedraui",
+    telefono: "449 140 71 16",
+  },
+
+  "Oriente": {
+    nombre: "SUC. ORIENTE",
+    direccion: "Av. Aguascalientes #101",
+    referencia: "A 1 cuadra de Barberena",
+    telefono: "449 975 04 74",
+  },
+
+  "López Portillo": {
+    nombre: "SUC. ORIENTE",
+    direccion: "Av. Aguascalientes #101",
+    referencia: "A 1 cuadra de Barberena",
+    telefono: "449 975 04 74",
+  },
+
+  "Segundo Anillo": {
+    nombre: "SUC. ORIENTE",
+    direccion: "Av. Aguascalientes #101",
+    referencia: "A 1 cuadra de Barberena",
+    telefono: "449 975 04 74",
+  },
+
+  "Agostaderito": {
+    nombre: "SUC. AGOSTADERITO",
+    direccion: "Av. Agostaderito #3965",
+    referencia: "Fte. a la Delegación",
+    telefono: "449 913 55 19",
+  },
+
+  "Villas del Pilar": {
+    nombre: "SUC. VILLAS DEL PILAR",
+    direccion: "Av. Siglo XXI #3165",
+    referencia: "Esq. Carlos López M.",
+    telefono: "449 250 57 33",
+  },
+
+  "Tercer Anillo": {
+    nombre: "SUC. VILLAS DEL PILAR",
+    direccion: "Av. Siglo XXI #3165",
+    referencia: "Esq. Carlos López M.",
+    telefono: "449 250 57 33",
+  },
+};
+
+/* =========================================================
+   FORMATO MONEDA
+========================================================= */
+
+function dinero(valor: number) {
+  return `$${Number(valor || 0).toLocaleString("es-MX", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+/* =========================================================
+   ESTILOS
+========================================================= */
+
+const styles = StyleSheet.create({
+  page: {
+    paddingTop: 32,
+    paddingBottom: 55,
+    paddingHorizontal: 38,
+    fontFamily: "Helvetica",
+    fontSize: 9,
+    color: "#222222",
+    backgroundColor: "#FFFFFF",
+  },
+
+  /* HEADER */
 
   header: {
     backgroundColor: "#111111",
-    color: "#FFFFFF",
-    padding: 25,
-    paddingBottom: 20,
+    padding: 18,
+    borderRadius: 8,
+    marginBottom: 18,
+  },
+
+  headerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 
   logo: {
     width: 75,
     height: 75,
     objectFit: "contain",
-    alignSelf: "center",
-    marginBottom: 8,
   },
 
-  empresa: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 5,
+  companyBlock: {
+    flex: 1,
+    marginLeft: 14,
   },
 
-  titulo: {
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 8,
-  },
-
-  fecha: {
-    fontSize: 9,
-    textAlign: "center",
-    marginBottom: 12,
-  },
-
-  datosEmpresa: {
-    textAlign: "right",
-    fontSize: 8,
-    lineHeight: 1.5,
-  },
-
-  contenido: {
-    paddingHorizontal: 28,
-    paddingVertical: 22,
-    paddingBottom: 55,
-  },
-
-  seccion: {
-    marginBottom: 20,
-  },
-
-  tituloSeccion: {
-    backgroundColor: "#111111",
+  companyName: {
     color: "#FFFFFF",
-    fontSize: 12,
+    fontSize: 18,
     fontWeight: "bold",
-    padding: 8,
+    letterSpacing: 0.5,
+  },
+
+  companySubtitle: {
+    color: "#DDDDDD",
+    fontSize: 8,
+    marginTop: 4,
+  },
+
+  quoteBlock: {
+    width: 105,
+    alignItems: "flex-end",
+  },
+
+  quoteTitle: {
+    color: "#E31B23",
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+
+  quoteDate: {
+    color: "#FFFFFF",
+    fontSize: 8,
+    marginTop: 5,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#E31B23",
+    marginTop: 14,
     marginBottom: 10,
   },
 
-  datosGrid: {
-    flexDirection: "row",
+  branchName: {
+    color: "#E31B23",
+    fontSize: 9,
+    fontWeight: "bold",
+    marginBottom: 3,
   },
 
-  columna: {
-    flex: 1,
-    paddingRight: 12,
+  branchData: {
+    color: "#FFFFFF",
+    fontSize: 8,
+    lineHeight: 1.4,
   },
 
-  fila: {
+  /* SECCIONES */
+
+  section: {
+    marginBottom: 14,
+  },
+
+  sectionTitle: {
+    backgroundColor: "#111111",
+    color: "#FFFFFF",
+    fontSize: 10,
+    fontWeight: "bold",
+    paddingVertical: 7,
+    paddingHorizontal: 10,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+  },
+
+  sectionBody: {
+    borderWidth: 1,
+    borderColor: "#DDDDDD",
+    borderTopWidth: 0,
+    padding: 11,
+    borderBottomLeftRadius: 5,
+    borderBottomRightRadius: 5,
+  },
+
+  row: {
     flexDirection: "row",
     marginBottom: 6,
   },
 
-  etiqueta: {
-    width: 75,
-    fontWeight: "bold",
+  rowLast: {
+    flexDirection: "row",
   },
 
-  valor: {
+  label: {
+    fontWeight: "bold",
+    width: 85,
+    color: "#555555",
+  },
+
+  value: {
+    flex: 1,
+    color: "#222222",
+  },
+
+  /* VEHÍCULO */
+
+  vehicleGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+
+  vehicleItem: {
+    width: "50%",
+    flexDirection: "row",
+    marginBottom: 7,
+  },
+
+  vehicleLabel: {
+    fontWeight: "bold",
+    color: "#555555",
+    width: 70,
+  },
+
+  vehicleValue: {
     flex: 1,
   },
 
-  tabla: {
+  /* TABLA */
+
+  table: {
+    width: "100%",
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#D5D5D5",
   },
 
-  encabezadoTabla: {
+  tableHeader: {
     flexDirection: "row",
     backgroundColor: "#111111",
     color: "#FFFFFF",
-    padding: 8,
-    fontWeight: "bold",
+    paddingVertical: 8,
+    paddingHorizontal: 6,
   },
 
-  filaTabla: {
+  tableRow: {
     flexDirection: "row",
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderTopWidth: 1,
+    borderTopColor: "#E1E1E1",
+    paddingVertical: 8,
+    paddingHorizontal: 6,
   },
 
-  cantidad: {
-    width: 45,
+  tableRowAlt: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#E1E1E1",
+    backgroundColor: "#F7F7F7",
+    paddingVertical: 8,
+    paddingHorizontal: 6,
+  },
+
+  colCantidad: {
+    width: "12%",
     textAlign: "center",
   },
 
-  descripcion: {
-    flex: 1,
+  colDescripcion: {
+    width: "53%",
   },
 
-  precio: {
-    width: 90,
+  colPrecio: {
+    width: "17%",
     textAlign: "right",
   },
 
-  importe: {
-    width: 90,
+  colImporte: {
+    width: "18%",
     textAlign: "right",
   },
 
-  totales: {
-    marginTop: 15,
-    marginLeft: "auto",
-    width: 230,
+  headerText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 8,
   },
 
-  totalFila: {
+  /* TOTALES */
+
+  totalsContainer: {
+    marginTop: 12,
+    alignItems: "flex-end",
+  },
+
+  totalRow: {
     flexDirection: "row",
+    width: 220,
     justifyContent: "space-between",
-    marginBottom: 7,
+    paddingVertical: 4,
+  },
+
+  totalLabel: {
+    color: "#555555",
+  },
+
+  totalValue: {
+    fontWeight: "bold",
   },
 
   totalFinal: {
     flexDirection: "row",
+    width: 220,
     justifyContent: "space-between",
-    borderTopWidth: 2,
-    borderTopColor: "#111111",
-    paddingTop: 9,
-    marginTop: 5,
-    fontSize: 14,
+    backgroundColor: "#E31B23",
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+    marginTop: 4,
+    borderRadius: 5,
+  },
+
+  totalFinalText: {
+    color: "#FFFFFF",
+    fontSize: 11,
     fontWeight: "bold",
   },
 
-  notasBox: {
-    marginTop: 25,
-    padding: 12,
+  /* NOTAS */
+
+  notesBox: {
     borderWidth: 1,
-    borderColor: "#D1D5DB",
+    borderColor: "#E31B23",
+    borderRadius: 5,
+    padding: 10,
+    marginTop: 4,
   },
 
-  notasTitulo: {
-    fontSize: 10,
-    fontWeight: "bold",
-    marginBottom: 7,
-  },
-
-  notasTexto: {
+  notesTitle: {
+    color: "#E31B23",
     fontSize: 9,
-    color: "#333333",
-    lineHeight: 1.4,
+    fontWeight: "bold",
+    marginBottom: 5,
   },
 
-  nota: {
-    marginTop: 20,
-    fontSize: 8,
-    color: "#555555",
+  notesText: {
+    fontSize: 8.5,
     lineHeight: 1.5,
+    color: "#444444",
   },
+
+  /* FOOTER */
 
   footer: {
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "#111111",
-    color: "#FFFFFF",
-    padding: 12,
-    textAlign: "center",
-    fontSize: 8,
+    bottom: 20,
+    left: 38,
+    right: 38,
+    borderTopWidth: 1,
+    borderTopColor: "#222222",
+    paddingTop: 7,
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
+  footerText: {
+    fontSize: 7,
+    color: "#666666",
+  },
+
+  footerBrand: {
+    fontSize: 7,
+    color: "#E31B23",
+    fontWeight: "bold",
+  },
 });
 
-function dinero(valor: number) {
-  return valor.toLocaleString("es-MX", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+/* =========================================================
+   PDF
+========================================================= */
 
 export default function CotizacionPDF({
   vehiculo,
@@ -245,356 +432,326 @@ export default function CotizacionPDF({
   total,
   notas,
 }: CotizacionPDFProps) {
+  const fecha = new Date().toLocaleDateString("es-MX", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
-  const fecha = new Date().toLocaleDateString("es-MX");
+  /*
+    Busca la sucursal registrada en el cliente.
+
+    Si por alguna razón no coincide con una de las opciones,
+    se utiliza Oriente como respaldo para no romper el PDF.
+  */
+
+  const sucursal =
+    sucursales[vehiculo.clientes.sucursal] ||
+    sucursales["Oriente"];
+
+  const folio = `COT-${Date.now().toString().slice(-6)}`;
 
   return (
     <Document>
-
-      <Page
-        size="A4"
-        style={styles.page}
-      >
-
-        {/* ENCABEZADO */}
+      <Page size="LETTER" style={styles.page} wrap>
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
         <View style={styles.header}>
+          <View style={styles.headerTop}>
+            <Image src="/logo.png" style={styles.logo} />
 
-          <Image
-            src="/logo.png"
-            style={styles.logo}
-          />
+            <View style={styles.companyBlock}>
+              <Text style={styles.companyName}>
+                AUTOMOTRIZ EL GÜERO
+              </Text>
 
-          <Text style={styles.empresa}>
+              <Text style={styles.companySubtitle}>
+                Servicio, mantenimiento y cuidado para tu vehículo
+              </Text>
+            </View>
+
+            <View style={styles.quoteBlock}>
+              <Text style={styles.quoteTitle}>
+                COTIZACIÓN
+              </Text>
+
+              <Text style={styles.quoteDate}>
+                Folio: {folio}
+              </Text>
+
+              <Text style={styles.quoteDate}>
+                Fecha: {fecha}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <Text style={styles.branchName}>
+            {sucursal.nombre}
+          </Text>
+
+          <Text style={styles.branchData}>
+            {sucursal.direccion} · {sucursal.referencia}
+          </Text>
+
+          <Text style={styles.branchData}>
+            Tel. {sucursal.telefono}
+          </Text>
+        </View>
+
+        {/* =================================================
+            CLIENTE
+        ================================================= */}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            DATOS DEL CLIENTE
+          </Text>
+
+          <View style={styles.sectionBody}>
+            <View style={styles.row}>
+              <Text style={styles.label}>Cliente:</Text>
+
+              <Text style={styles.value}>
+                {vehiculo.clientes.nombre}
+              </Text>
+            </View>
+
+            <View style={styles.rowLast}>
+              <Text style={styles.label}>Teléfono:</Text>
+
+              <Text style={styles.value}>
+                {vehiculo.clientes.telefono || "No registrado"}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* =================================================
+            VEHÍCULO
+        ================================================= */}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            DATOS DEL VEHÍCULO
+          </Text>
+
+          <View style={styles.sectionBody}>
+            <View style={styles.vehicleGrid}>
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>Marca:</Text>
+
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.marca}
+                </Text>
+              </View>
+
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>Modelo:</Text>
+
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.modelo}
+                </Text>
+              </View>
+
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>Año:</Text>
+
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.anio}
+                </Text>
+              </View>
+
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>Placas:</Text>
+
+                <Text style={styles.vehicleValue}>
+                  {vehiculo.placas}
+                </Text>
+              </View>
+
+              <View style={styles.vehicleItem}>
+                <Text style={styles.vehicleLabel}>Kilometraje:</Text>
+
+                <Text style={styles.vehicleValue}>
+                  {Number(
+                    vehiculo.kilometraje || 0
+                  ).toLocaleString("es-MX")} km
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* =================================================
+            CONCEPTOS
+        ================================================= */}
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>
+            CONCEPTOS DE LA COTIZACIÓN
+          </Text>
+
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text
+                style={[
+                  styles.colCantidad,
+                  styles.headerText,
+                ]}
+              >
+                CANT.
+              </Text>
+
+              <Text
+                style={[
+                  styles.colDescripcion,
+                  styles.headerText,
+                ]}
+              >
+                DESCRIPCIÓN
+              </Text>
+
+              <Text
+                style={[
+                  styles.colPrecio,
+                  styles.headerText,
+                ]}
+              >
+                PRECIO
+              </Text>
+
+              <Text
+                style={[
+                  styles.colImporte,
+                  styles.headerText,
+                ]}
+              >
+                IMPORTE
+              </Text>
+            </View>
+
+            {conceptos.length === 0 ? (
+              <View style={styles.tableRow}>
+                <Text
+                  style={{
+                    width: "100%",
+                    textAlign: "center",
+                    color: "#777777",
+                    paddingVertical: 5,
+                  }}
+                >
+                  Sin conceptos agregados
+                </Text>
+              </View>
+            ) : (
+              conceptos.map((concepto, index) => {
+                const importe =
+                  Number(concepto.cantidad || 0) *
+                  Number(concepto.precio || 0);
+
+                return (
+                  <View
+                    key={index}
+                    style={
+                      index % 2 === 0
+                        ? styles.tableRow
+                        : styles.tableRowAlt
+                    }
+                  >
+                    <Text style={styles.colCantidad}>
+                      {concepto.cantidad}
+                    </Text>
+
+                    <Text style={styles.colDescripcion}>
+                      {concepto.descripcion}
+                    </Text>
+
+                    <Text style={styles.colPrecio}>
+                      {dinero(concepto.precio)}
+                    </Text>
+
+                    <Text style={styles.colImporte}>
+                      {dinero(importe)}
+                    </Text>
+                  </View>
+                );
+              })
+            )}
+          </View>
+
+          {/* =================================================
+              TOTALES
+          ================================================= */}
+
+          <View style={styles.totalsContainer}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>
+                Subtotal:
+              </Text>
+
+              <Text style={styles.totalValue}>
+                {dinero(subtotal)}
+              </Text>
+            </View>
+
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>
+                IVA:
+              </Text>
+
+              <Text style={styles.totalValue}>
+                {dinero(iva)}
+              </Text>
+            </View>
+
+            <View style={styles.totalFinal}>
+              <Text style={styles.totalFinalText}>
+                TOTAL
+              </Text>
+
+              <Text style={styles.totalFinalText}>
+                {dinero(total)}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* =================================================
+            NOTAS
+        ================================================= */}
+
+        {notas && notas.trim() !== "" && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              OBSERVACIONES
+            </Text>
+
+            <View style={styles.notesBox}>
+              <Text style={styles.notesText}>
+                {notas}
+              </Text>
+            </View>
+          </View>
+        )}
+
+        {/* =================================================
+            FOOTER
+        ================================================= */}
+
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>
+            Gracias por confiar en Automotriz El Güero
+          </Text>
+
+          <Text style={styles.footerBrand}>
             AUTOMOTRIZ EL GÜERO
           </Text>
-
-          <View
-  style={{
-    marginTop: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  }}
->
-
-  <Text
-    style={{
-      color: "#FFFFFF",
-      fontSize: 10,
-    }}
-  >
-    {fecha}
-  </Text>
-</View>
-
-          <Text style={styles.datosEmpresa}>
-            Av. Aguascalientes Ote.{"\n"}
-            Tel. 449 975 04 74
-          </Text>
-
         </View>
-
-
-        {/* CONTENIDO */}
-
-        <View style={styles.contenido}>
-
-          {/* DATOS DEL CLIENTE */}
-
-          <View style={styles.seccion}>
-
-            <Text style={styles.tituloSeccion}>
-              DATOS DEL CLIENTE Y VEHÍCULO
-            </Text>
-
-            <View style={styles.datosGrid}>
-
-              {/* COLUMNA CLIENTE */}
-
-              <View style={styles.columna}>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Cliente:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.clientes.nombre}
-                  </Text>
-
-                </View>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Teléfono:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.clientes.telefono}
-                  </Text>
-
-                </View>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Sucursal:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.clientes.sucursal}
-                  </Text>
-
-                </View>
-
-              </View>
-
-
-              {/* COLUMNA VEHÍCULO */}
-
-              <View style={styles.columna}>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Vehículo:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.marca} {vehiculo.modelo}
-                  </Text>
-
-                </View>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Año:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.anio}
-                  </Text>
-
-                </View>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Placas:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.placas}
-                  </Text>
-
-                </View>
-
-                <View style={styles.fila}>
-
-                  <Text style={styles.etiqueta}>
-                    Km:
-                  </Text>
-
-                  <Text style={styles.valor}>
-                    {vehiculo.kilometraje.toLocaleString()} km
-                  </Text>
-
-                </View>
-
-              </View>
-
-            </View>
-
-          </View>
-
-
-          {/* SERVICIOS */}
-
-          <View style={styles.seccion}>
-
-            <Text style={styles.tituloSeccion}>
-              SERVICIOS Y REFACCIONES
-            </Text>
-
-            <View style={styles.tabla}>
-
-              {/* ENCABEZADO */}
-
-              <View style={styles.encabezadoTabla}>
-
-                <Text style={styles.cantidad}>
-                  Cant.
-                </Text>
-
-                <Text style={styles.descripcion}>
-                  Descripción
-                </Text>
-
-                <Text style={styles.precio}>
-                  Precio
-                </Text>
-
-                <Text style={styles.importe}>
-                  Importe
-                </Text>
-
-              </View>
-
-
-              {/* CONCEPTOS */}
-
-              {conceptos.map((concepto, index) => (
-
-                <View
-                  key={index}
-                  style={styles.filaTabla}
-                >
-
-                  <Text style={styles.cantidad}>
-                    {concepto.cantidad}
-                  </Text>
-
-                  <Text style={styles.descripcion}>
-                    {concepto.descripcion}
-                  </Text>
-
-                  <Text style={styles.precio}>
-                    ${dinero(concepto.precio)}
-                  </Text>
-
-                  <Text style={styles.importe}>
-                    $
-                    {dinero(
-                      concepto.cantidad *
-                      concepto.precio
-                    )}
-                  </Text>
-
-                </View>
-
-              ))}
-
-            </View>
-
-
-            {/* TOTALES */}
-
-            <View style={styles.totales}>
-
-              <View style={styles.totalFila}>
-
-                <Text>
-                  Subtotal:
-                </Text>
-
-                <Text>
-                  ${dinero(subtotal)}
-                </Text>
-
-              </View>
-
-
-              <View style={styles.totalFila}>
-
-                <Text>
-                  IVA 16%:
-                </Text>
-
-                <Text>
-                  ${dinero(iva)}
-                </Text>
-
-              </View>
-
-
-              <View style={styles.totalFinal}>
-
-                <Text>
-                  TOTAL:
-                </Text>
-
-                <Text>
-                  ${dinero(total)}
-                </Text>
-
-              </View>
-
-            </View>
-
-          </View>
-
-
-          {/* NOTAS */}
-
-          {notas && notas.trim() !== "" && (
-  <View
-    style={{
-      marginTop: 25,
-      padding: 15,
-      borderWidth: 1,
-      borderColor: "#B91C1C",
-      backgroundColor: "#FFF8F8",
-    }}
-  >
-    <Text
-      style={{
-        color: "#B91C1C",
-        fontSize: 11,
-        fontWeight: "bold",
-        marginBottom: 8,
-      }}
-    >
-      NOTAS Y OBSERVACIONES
-    </Text>
-
-    <Text
-      style={{
-        fontSize: 10,
-        lineHeight: 1.6,
-      }}
-    >
-      {notas}
-    </Text>
-  </View>
-)}
-
-
-
-          {/* LEYENDA */}
-
-          <Text style={styles.nota}>
-
-            Los precios cotizados son estimados y podrán
-            ajustarse si el proveedor confirma alguna
-            variación en las características o disponibilidad
-            de las refacciones. En caso de existir cambios,
-            se notificará oportunamente.
-
-          </Text>
-
-        </View>
-
-
-        {/* PIE */}
-
-        <View style={styles.footer}>
-
-          <Text>
-            Automotriz El Güero
-          </Text>
-
-          <Text>
-            Siéntete seguro, estás en Automotriz El Güero
-          </Text>
-
-        </View>
-
       </Page>
-
     </Document>
   );
 }
