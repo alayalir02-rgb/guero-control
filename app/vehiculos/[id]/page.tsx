@@ -27,10 +27,28 @@ type Vehiculo = {
 type Servicio = {
   id: number;
   fecha: string;
-  categoria: string;
-  servicio: string;
-  kilometraje_actual: number;
-  kilometraje_proximo: number;
+  proxima_fecha: string | null;
+
+  categoria: string | null;
+  servicio: string | null;
+
+  kilometraje_actual: number | null;
+  kilometraje_proximo: number | null;
+
+  aceite: string | null;
+  viscosidad: string | null;
+  bujias: string | null;
+  cambio_bujias: string | null;
+
+  tipo_anticongelante: string | null;
+  accion_anticongelante: string | null;
+
+  tipo_transmision: string | null;
+  aceite_transmision: string | null;
+
+  servicio_frenos: string | null;
+  ubicacion_frenos: string | null;
+
   notas: string | null;
 };
 
